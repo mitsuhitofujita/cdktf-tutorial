@@ -6,6 +6,6 @@ export const handler = async (): Promise<APIGatewayProxyResultV2> => {
         headers: {
             'Content-Type': 'text/html; charset=utf-8',
         },
-        body: `<p>Hello world</p>`,
+        body: `<p>Hello, world!</p>`,
     }
 }
