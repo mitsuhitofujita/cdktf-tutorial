@@ -142,6 +142,7 @@ class LambdaStack extends TerraformStack {
     const logGroup = new aws.cloudwatchLogGroup.CloudwatchLogGroup(this, 'log-group', {
       name: `/aws/lambda/${prefix}-${config.environment}`,
       retentionInDays: 3,
+      skipDestroy: false,
     });
 
     const lambdaFunction = new aws.lambdaFunction.LambdaFunction(this, 'function', {
