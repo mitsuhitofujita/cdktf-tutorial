@@ -29,9 +29,6 @@ class LambdaStack extends TerraformStack {
 
     const bucket = new aws.s3Bucket.S3Bucket(this, 'bucket', {
       bucket: `${prefix}-${config.environment}`,
-      tags: {
-        "Policy": "can-deploy-lambda-function",
-      },
     });
 
     new aws.s3BucketAcl.S3BucketAcl(this, 'bucket-acl', {
