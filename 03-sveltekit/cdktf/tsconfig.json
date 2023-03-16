@@ -27,10 +27,13 @@
     "skipLibCheck": true
   },
   "include": [
-    "**/*.ts"
+    "src/**/*.ts"
   ],
   "exclude": [
     "node_modules",
     "cdktf.out"
+  ],
+  "files": [
+    "./src/env.d.ts",
   ]
 }
