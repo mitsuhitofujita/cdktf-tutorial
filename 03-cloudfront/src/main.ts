@@ -1,14 +1,20 @@
-import { Construct } from "constructs";
-import { App, TerraformStack } from "cdktf";
+import { App } from "cdktf";
+import { StaticWebStack } from "./stacks/static-web-stack";
 
-class MyStack extends TerraformStack {
-  constructor(scope: Construct, id: string) {
-    super(scope, id);
-
-    // define resources here
-  }
-}
-
+const project = "cdktf-tutorial";
+const environment = "dev";
 const app = new App();
-new MyStack(app, "03-cloudfront");
+new StaticWebStack(app, "cloudfront", {
+  backend: {
+    bucket: process.env.TERRAFORM_S3_BACKEND_BUCKET,
+    key: `${project}/03-cloudfront/${environment}.tfstate`,
+    region: process.env.AWS_DEFAULT_REGION,
+  },
+  provider: {
+    region: process.env.AWS_DEFAULT_REGION,
+  },
+  domain: process.env.TERRAFORM_DOMAIN,
+  project,
+  environment,
+});
 app.synth();
