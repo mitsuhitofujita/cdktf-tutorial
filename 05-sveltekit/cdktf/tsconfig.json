@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "alwaysStrict": true,
-    "charset": "utf8",
     "declaration": true,
     "experimentalDecorators": true,
     "inlineSourceMap": true,
@@ -32,5 +31,8 @@
   "exclude": [
     "node_modules",
     "cdktf.out"
-  ]
+  ],
+  "files": [
+    "./src/env.d.ts",
+  ],
 }
