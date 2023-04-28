@@ -9,6 +9,7 @@ import { CloudwatchLogGroup } from "@cdktf/provider-aws/lib/cloudwatch-log-group
 import { LambdaFunction } from "@cdktf/provider-aws/lib/lambda-function";
 import path = require("path");
 import { LambdaPermission } from "@cdktf/provider-aws/lib/lambda-permission";
+import { LambdaFunctionUrl } from "@cdktf/provider-aws/lib/lambda-function-url";
 
 export interface WebLambdaFunctionConfig {
   assetPath: string;
@@ -23,6 +24,7 @@ export interface WebLambdaFunctionConfig {
 export class WebLambdaFunction extends Construct {
   lambdaFunction: LambdaFunction;
   lambdaPermission: LambdaPermission;
+  lambdaFunctionUrl: LambdaFunctionUrl;
 
   constructor(scope: Construct, id: string, config: WebLambdaFunctionConfig) {
     super(scope, id);
@@ -110,5 +112,14 @@ export class WebLambdaFunction extends Construct {
       functionName: this.lambdaFunction.functionName,
       principal: "apigateway.amazonaws.com",
     });
+
+    this.lambdaFunctionUrl = new LambdaFunctionUrl(
+      scope,
+      `${id}_function_url`,
+      {
+        functionName: this.lambdaFunction.functionName,
+        authorizationType: "NONE",
+      }
+    );
   }
 }

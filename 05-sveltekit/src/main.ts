@@ -19,3 +19,23 @@ new WebStack(app, "sveltekit", {
   region: process.env.AWS_DEFAULT_REGION,
 });
 app.synth();
+
+/*
+function getFilesWithDirectoryNames(dirPath: string): Array<{ directory: string; fileName: string }> {
+  const files: Array<{ directory: string; fileName: string }> = [];
+
+  fs.readdirSync(dirPath).forEach((file) => {
+    const filePath = path.join(dirPath, file);
+    if (fs.statSync(filePath).isDirectory()) {
+      // サブディレクトリを再帰的に処理する
+      const subDirectoryFiles = getFilesWithDirectoryNames(filePath);
+      files.push(...subDirectoryFiles);
+    } else {
+      const directoryName = path.basename(dirPath);
+      files.push({ directory: directoryName, fileName: file });
+    }
+  });
+
+  return files;
+}
+*/

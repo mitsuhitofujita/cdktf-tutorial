@@ -29,7 +29,7 @@ export class WebApiGateway extends Construct {
     this.method = new ApiGatewayMethod(this, `${id}_method`, {
       restApiId: this.restApi.id,
       resourceId: this.restApi.rootResourceId,
-      httpMethod: "GET",
+      httpMethod: "ANY",
       authorization: "NONE",
     });
 
@@ -51,7 +51,7 @@ export class WebApiGateway extends Construct {
       `${id}_api_gateway_deployment`,
       {
         restApiId: this.restApi.id,
-        dependsOn: [this.method, this.integration],
+        dependsOn: [this.methodGet, this.integration],
       }
     );
 

@@ -3,8 +3,8 @@ import { S3Backend, TerraformStack } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { WebS3Bucket } from "../constructs/web-s3-bucket";
 import { WebLambdaFunction } from "../constructs/web-lambda-function";
-import { WebApiGateway } from "../constructs/web-api-gateway";
 import { WebCloudfront } from "../constructs/web-cloudfront";
+// import { HttpApiGateway } from "../constructs/http-api-gateway";
 
 export interface StaticWebStackConfig {
   backend: {
@@ -37,27 +37,42 @@ export class WebStack extends TerraformStack {
     });
 
     const lambdaFunction = new WebLambdaFunction(this, `${id}_web_function`, {
-      assetPath: "lambda/hello/dist",
-      bucket: s3Bucket.bucket,
+      assetPath: "sveltekit/build/server",
+      bucket: s3Bucket.s3bucket,
       environment: config.environment,
-      lambdaName: "hello",
+      lambdaName: "sveltekit",
       prefix,
-      handler: "lambda.handler",
+      handler: "index.handler",
       runtime: "nodejs16.x",
     });
 
-    const apiGateway = new WebApiGateway(this, `${id}_web_rest_api_gateway`, {
+    /*
+    const apiGateway = new HttpApiGateway(this, `${id}_web_rest_api_gateway`, {
       prefix,
       environment: config.environment,
       lambdaFunction: lambdaFunction.lambdaFunction,
     });
+    */
 
     new WebCloudfront(this, `${id}_web_cloudfront`, {
       prefix,
       environment: config.environment,
       region: config.region,
-      s3Bucket: s3Bucket.bucket,
-      apiGatewayRestApi: apiGateway.restApi,
+      s3Bucket: s3Bucket.s3bucket,
+      // apiGatewayApi: apiGateway.api,
+      lambdaFunctionUrl: lambdaFunction.lambdaFunctionUrl,
     });
+
+    /*
+    new DirectoryS3Object(this, `${id}_s3_object_prerendered`, {
+      baseDirectory: "sveltekit/build/prerendered",
+      s3Bucket: s3Bucket.s3bucket,
+    });
+
+    new DirectoryS3Object(this, `${id}_s3_object_assets`, {
+      baseDirectory: "sveltekit/build/assets",
+      s3Bucket: s3Bucket.s3bucket,
+    });
+    */
   }
 }
