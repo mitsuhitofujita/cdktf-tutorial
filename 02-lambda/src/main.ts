@@ -1,10 +1,10 @@
 import { App } from "cdktf";
-import { LambdaStack } from "./stacks/LanbdaStack";
+import { HttpLambdaStack } from "./stacks/http-lambda-stack";
 
-const project = 'cdktf-tutorial';
-const environment = 'dev';
+const project = "cdktf-tutorial";
+const environment = "dev";
 const app = new App();
-new LambdaStack(app, "lambda", {
+new HttpLambdaStack(app, "lambda", {
   backend: {
     bucket: process.env.TERRAFORM_S3_BACKEND_BUCKET,
     key: `${project}/02-lambda/${environment}.tfstate`,
