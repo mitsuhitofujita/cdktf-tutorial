@@ -1,10 +1,10 @@
 import { App } from "cdktf";
-import { RestApiGatewayStack } from "./stacks/rest-api-gateway-stack";
+import { HttpApiGatewayStack } from "./stacks/http-api-gateway-stack";
 
 const project = "cdktf-tutorial";
 const environment = "dev";
 const app = new App();
-new RestApiGatewayStack(app, "apigateway", {
+new HttpApiGatewayStack(app, "apigateway", {
   backend: {
     bucket: process.env.TERRAFORM_S3_BACKEND_BUCKET,
     key: `${project}/04-apigateway/${environment}.tfstate`,

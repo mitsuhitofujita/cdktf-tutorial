@@ -1,1 +1,0 @@
-{"version":3,"file":"lambda.js","sourceRoot":"","sources":["../src/lambda.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAEO,IAAM,OAAO,GAAG;;QACnB,sBAAO;gBACH,UAAU,EAAE,GAAG;gBACf,OAAO,EAAE;oBACL,cAAc,EAAE,0BAA0B;iBAC7C;gBACD,IAAI,EAAE,sBAAsB;aAC/B,EAAA;;KACJ,CAAA;AARY,QAAA,OAAO,WAQnB"}
