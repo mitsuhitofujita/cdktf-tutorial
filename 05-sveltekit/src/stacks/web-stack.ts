@@ -6,7 +6,6 @@ import { WebCloudfront } from "../constructs/web-cloudfront";
 import { LambdaS3Bucket } from "../constructs/lambda-s3-bucket";
 import { ApiGatewayLambdaFunction } from "../constructs/api-gateway-lambda-function";
 import { HttpApiGateway } from "../constructs/http-api-gateway";
-// import { HttpApiGateway } from "../constructs/http-api-gateway";
 
 export interface StaticWebStackConfig {
   backend: {
