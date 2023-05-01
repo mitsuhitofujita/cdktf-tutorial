@@ -14,11 +14,11 @@ export class WebS3Bucket extends Construct {
   constructor(scope: Construct, id: string, config: WebS3BucketConfig) {
     super(scope, id);
 
-    this.s3bucket = new S3Bucket(this, `${id}_bucket`, {
+    this.s3bucket = new S3Bucket(this, "s3_bucket", {
       bucket: `${config.prefix}-web-${config.environment}`,
     });
 
-    new S3BucketWebsiteConfiguration(this, `${id}_bucket_website`, {
+    new S3BucketWebsiteConfiguration(this, "s3_bucket_website", {
       bucket: this.s3bucket.bucket,
       indexDocument: {
         suffix: "index.html",
@@ -42,7 +42,7 @@ export class WebS3Bucket extends Construct {
       ],
     };
 
-    new S3BucketPolicy(this, `${id}_bucket_policy`, {
+    new S3BucketPolicy(this, "s3_bucket_policy", {
       bucket: this.s3bucket.bucket,
       policy: JSON.stringify(bucketPolicy),
     });

@@ -2,8 +2,10 @@ import { Construct } from "constructs";
 import { S3Backend, TerraformStack } from "cdktf";
 import { AwsProvider } from "@cdktf/provider-aws/lib/provider";
 import { WebS3Bucket } from "../constructs/web-s3-bucket";
-import { WebLambdaFunction } from "../constructs/web-lambda-function";
 import { WebCloudfront } from "../constructs/web-cloudfront";
+import { LambdaS3Bucket } from "../constructs/lambda-s3-bucket";
+import { ApiGatewayLambdaFunction } from "../constructs/api-gateway-lambda-function";
+import { HttpApiGateway } from "../constructs/http-api-gateway";
 // import { HttpApiGateway } from "../constructs/http-api-gateway";
 
 export interface StaticWebStackConfig {
@@ -31,44 +33,52 @@ export class WebStack extends TerraformStack {
 
     const prefix = `${config.domain}-${config.project}-${id}`;
 
-    const s3Bucket = new WebS3Bucket(this, `${id}_web_bucket`, {
+    const lambdaS3Bucket = new LambdaS3Bucket(this, "lambda_s3_bucket", {
       prefix,
       environment: config.environment,
     });
 
-    const lambdaFunction = new WebLambdaFunction(this, `${id}_web_function`, {
-      assetPath: "sveltekit/build/server",
-      bucket: s3Bucket.s3bucket,
-      environment: config.environment,
-      lambdaName: "sveltekit",
-      prefix,
-      handler: "index.handler",
-      runtime: "nodejs16.x",
-    });
+    const lambdaFunction = new ApiGatewayLambdaFunction(
+      this,
+      "api_gateway_lambda_function",
+      {
+        assetPath: "sveltekit/build/server",
+        s3Bucket: lambdaS3Bucket.s3Bucket,
+        environment: config.environment,
+        lambdaName: "sveltekit",
+        prefix,
+        handler: "index.handler",
+        runtime: "nodejs16.x",
+      }
+    );
 
-    /*
-    const apiGateway = new HttpApiGateway(this, `${id}_web_rest_api_gateway`, {
-      prefix,
+    const httpApiGateway = new HttpApiGateway(this, "http_api_gateway", {
       environment: config.environment,
+      prefix,
       lambdaFunction: lambdaFunction.lambdaFunction,
     });
-    */
 
-    new WebCloudfront(this, `${id}_web_cloudfront`, {
+    const webS3Bucket = new WebS3Bucket(this, "web_s3_bucket", {
+      prefix,
+      environment: config.environment,
+    });
+
+    new WebCloudfront(this, "web_cloudfront", {
       prefix,
       environment: config.environment,
       region: config.region,
-      s3Bucket: s3Bucket.s3bucket,
-      // apiGatewayApi: apiGateway.api,
-      lambdaFunctionUrl: lambdaFunction.lambdaFunctionUrl,
+      s3Bucket: webS3Bucket.s3bucket,
+      apiGatewayApi: httpApiGateway.httpApiGateway,
     });
 
     /*
-    new DirectoryS3Object(this, `${id}_s3_object_prerendered`, {
+    new DirectoryS3Object(this, "prerendered", {
       baseDirectory: "sveltekit/build/prerendered",
       s3Bucket: s3Bucket.s3bucket,
     });
+    */
 
+    /*
     new DirectoryS3Object(this, `${id}_s3_object_assets`, {
       baseDirectory: "sveltekit/build/assets",
       s3Bucket: s3Bucket.s3bucket,

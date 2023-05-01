@@ -22,6 +22,13 @@ export class HttpApiGateway extends Construct {
       protocolType: "HTTP",
     });
 
+    /*
+    const route = new Apigatewayv2Route(this, "api_gateway_route", {
+      apiId: this.httpApiGateway.id,
+      routeKey: "ANY /{proxy+}",
+    });
+    */
+
     const integration = new Apigatewayv2Integration(
       this,
       "api_gateway_integration",
@@ -35,7 +42,7 @@ export class HttpApiGateway extends Construct {
 
     new Apigatewayv2Route(this, "api_gateway_integration_route", {
       apiId: this.httpApiGateway.id,
-      routeKey: "$default",
+      routeKey: "ANY /{proxy}",
       target: `integrations/${integration.id}`,
     });
 

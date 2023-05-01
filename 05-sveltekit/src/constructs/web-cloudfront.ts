@@ -2,19 +2,16 @@ import { Construct } from "constructs";
 import { S3Bucket } from "@cdktf/provider-aws/lib/s3-bucket";
 import { CloudfrontDistribution } from "@cdktf/provider-aws/lib/cloudfront-distribution";
 import { CloudfrontOriginAccessControl } from "@cdktf/provider-aws/lib/cloudfront-origin-access-control";
-// import { Apigatewayv2Api } from "@cdktf/provider-aws/lib/apigatewayv2-api";
+import { Apigatewayv2Api } from "@cdktf/provider-aws/lib/apigatewayv2-api";
 import { CloudfrontOriginRequestPolicy } from "@cdktf/provider-aws/lib/cloudfront-origin-request-policy";
 import { CloudfrontCachePolicy } from "@cdktf/provider-aws/lib/cloudfront-cache-policy";
-import { LambdaFunctionUrl } from "@cdktf/provider-aws/lib/lambda-function-url";
-// import { extractDomainFromURI } from "../helper/extract-domain-from-uri";
 
 export interface WebCloudfrontConfig {
   prefix: string;
   environment: string;
   s3Bucket: S3Bucket;
-  // apiGatewayApi: Apigatewayv2Api;
+  apiGatewayApi: Apigatewayv2Api;
   region: string;
-  lambdaFunctionUrl: LambdaFunctionUrl;
 }
 
 export class WebCloudfront extends Construct {
@@ -25,7 +22,7 @@ export class WebCloudfront extends Construct {
 
     const originAccessControl = new CloudfrontOriginAccessControl(
       this,
-      `${id}_cloudfront_origin_access_control`,
+      "cloudfront_origin_access_control",
       {
         name: "static",
         originAccessControlOriginType: "s3",
@@ -36,7 +33,7 @@ export class WebCloudfront extends Construct {
 
     const originRequestPolicy = new CloudfrontOriginRequestPolicy(
       this,
-      `${id}-origin-request-policy`,
+      "cloudfront-origin-request-policy",
       {
         name: "api",
         cookiesConfig: {
@@ -63,40 +60,36 @@ export class WebCloudfront extends Construct {
       }
     );
 
-    const cachePolicy = new CloudfrontCachePolicy(this, `${id}-cache-policy`, {
-      name: "api",
-      maxTtl: 0,
-      minTtl: 0,
-      defaultTtl: 0,
-      parametersInCacheKeyAndForwardedToOrigin: {
-        cookiesConfig: {
-          cookieBehavior: "none",
+    const cachePolicy = new CloudfrontCachePolicy(
+      this,
+      "cloudfront-cache-policy",
+      {
+        name: "api",
+        maxTtl: 0,
+        minTtl: 0,
+        defaultTtl: 0,
+        parametersInCacheKeyAndForwardedToOrigin: {
+          cookiesConfig: {
+            cookieBehavior: "none",
+          },
+          headersConfig: {
+            headerBehavior: "none",
+          },
+          queryStringsConfig: {
+            queryStringBehavior: "none",
+          },
         },
-        headersConfig: {
-          headerBehavior: "none",
-        },
-        queryStringsConfig: {
-          queryStringBehavior: "none",
-        },
-      },
-    });
-
-    console.log(config.lambdaFunctionUrl.functionUrl);
+      }
+    );
 
     this.cloudfrontDistribution = new CloudfrontDistribution(
       this,
-      `${id}_cloudfront_distribution`,
+      "cloudfront_distribution",
       {
         origin: [
           {
             originId: "api",
-            // originPath: "/dev",
-            // domainName: `${config.apiGatewayApi.id}.execute-api.${config.region}.amazonaws.com`,
-            domainName:
-              "bkdi2twcu2cue27bg6btoh3b340lpdgs.lambda-url.ap-northeast-1.on.aws",
-            // domainName: extractDomainFromURI(
-            //   config.lambdaFunctionUrl.functionUrl
-            // ),
+            domainName: `${config.apiGatewayApi.id}.execute-api.${config.region}.amazonaws.com`,
 
             customOriginConfig: {
               httpPort: 80,
@@ -128,16 +121,7 @@ export class WebCloudfront extends Construct {
           ],
           cachedMethods: ["HEAD", "GET"],
           targetOriginId: "api",
-          // forwardedValues: {
-          //   queryString: true,
-          //   cookies: {
-          //     forward: "all",
-          //   },
-          // },
           viewerProtocolPolicy: "redirect-to-https",
-          // minTtl: 0,
-          // defaultTtl: 0,
-          // maxTtl: 0,
           compress: true,
         },
         orderedCacheBehavior: [
@@ -152,14 +136,14 @@ export class WebCloudfront extends Construct {
               },
             },
             targetOriginId: "static",
-            viewerProtocolPolicy: "allow-all",
+            viewerProtocolPolicy: "redirect-to-https",
             minTtl: 0,
             defaultTtl: 10,
             maxTtl: 10,
             compress: true,
           },
           {
-            pathPattern: "*.html",
+            pathPattern: "sverdle/how-to-play.html",
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
             cachedMethods: ["GET", "HEAD"],
             forwardedValues: {
@@ -169,14 +153,14 @@ export class WebCloudfront extends Construct {
               },
             },
             targetOriginId: "static",
-            viewerProtocolPolicy: "allow-all",
+            viewerProtocolPolicy: "redirect-to-https",
             minTtl: 0,
             defaultTtl: 10,
             maxTtl: 10,
             compress: true,
           },
           {
-            pathPattern: "*.png",
+            pathPattern: "index.html",
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
             cachedMethods: ["GET", "HEAD"],
             forwardedValues: {
@@ -186,14 +170,14 @@ export class WebCloudfront extends Construct {
               },
             },
             targetOriginId: "static",
-            viewerProtocolPolicy: "allow-all",
+            viewerProtocolPolicy: "redirect-to-https",
             minTtl: 0,
             defaultTtl: 10,
             maxTtl: 10,
             compress: true,
           },
           {
-            pathPattern: "*.txt",
+            pathPattern: "favicon.png",
             allowedMethods: ["GET", "HEAD", "OPTIONS"],
             cachedMethods: ["GET", "HEAD"],
             forwardedValues: {
@@ -203,7 +187,41 @@ export class WebCloudfront extends Construct {
               },
             },
             targetOriginId: "static",
-            viewerProtocolPolicy: "allow-all",
+            viewerProtocolPolicy: "redirect-to-https",
+            minTtl: 0,
+            defaultTtl: 10,
+            maxTtl: 10,
+            compress: true,
+          },
+          {
+            pathPattern: "about.html",
+            allowedMethods: ["GET", "HEAD", "OPTIONS"],
+            cachedMethods: ["GET", "HEAD"],
+            forwardedValues: {
+              queryString: false,
+              cookies: {
+                forward: "none",
+              },
+            },
+            targetOriginId: "static",
+            viewerProtocolPolicy: "redirect-to-https",
+            minTtl: 0,
+            defaultTtl: 10,
+            maxTtl: 10,
+            compress: true,
+          },
+          {
+            pathPattern: "robot.txt",
+            allowedMethods: ["GET", "HEAD", "OPTIONS"],
+            cachedMethods: ["GET", "HEAD"],
+            forwardedValues: {
+              queryString: false,
+              cookies: {
+                forward: "none",
+              },
+            },
+            targetOriginId: "static",
+            viewerProtocolPolicy: "redirect-to-https",
             minTtl: 0,
             defaultTtl: 10,
             maxTtl: 10,
