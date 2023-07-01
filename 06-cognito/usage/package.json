@@ -1,0 +1,15 @@
+{
+  "name": "usage",
+  "version": "1.0.0",
+  "description": "",
+  "main": "signup.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.325.0"
+  }
+}
